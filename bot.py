@@ -228,17 +228,23 @@ class Bot:
         url = "https://api.yescoin.gold/account/getAccountInfo"
         headers = self.base_headers
         res = self.http(url, headers)
+
+        # Tambahkan log untuk melihat respons yang diterima
+        print("Response text:", res.text)  # Log respons API
+
+        # Cek apakah respons kosong
+        if not res.text:
+            self.log(f"{merah}received empty response from API!")
+            return False
+
         code = res.json().get("code")
         if code != 0:
             self.log(f"{merah}something wrong, check http.log !")
             return False
 
+        # Lanjutkan dengan pemrosesan data jika respons valid
         coin = res.json()["data"]["currentAmount"]
-        rank = res.json()["data"]["rank"]
-        uid = res.json()["data"]["userId"]
-        level = res.json()["data"]["userLevel"]
         self.log(f"{hijau}total coin : {putih}{coin}")
-
         return coin
 
     def get_energy(self):
@@ -338,16 +344,16 @@ class Bot:
                 else:
                     res = requests.post(url, headers=headers, data=data)
 
-                open("http.log", "a", encoding="utf-8").write(
-                    f"{res.status_code} {res.text}\n"
-                )
+                # Cek status kode HTTP
+                if res.status_code != 200:
+                    self.log(f"{merah}HTTP Error: {res.status_code} - {res.text}")
+                    return res
+
                 return res
-            except (
-                requests.exceptions.ConnectionError,
-                requests.exceptions.Timeout,
-            ):
-                self.log(f"{merah}connection error / connection timeout !")
+            except (requests.exceptions.ConnectionError, requests.exceptions.Timeout) as e:
+                self.log(f"{merah}connection error / connection timeout: {e}")
                 continue
+
 
 
 if __name__ == "__main__":
