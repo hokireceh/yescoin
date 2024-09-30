@@ -7,8 +7,8 @@
         "end": 50
     },
     "auto_upgrade": {
-        "multivalue": false,
-        "coinlimit": false,
-        "fillrate": false
+        "multivalue": true,
+        "coinlimit": true,
+        "fillrate": true
     }
 }
